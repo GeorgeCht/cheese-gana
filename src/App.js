@@ -2,7 +2,10 @@ import * as THREE from 'three'
 import React, { useRef, useState } from 'react'
 import { easing } from 'maath'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
+import { Bloom, BrightnessContrast, DepthOfField, EffectComposer, Noise, SMAA } from '@react-three/postprocessing'
+import { ChromaticAberration } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
+
 
 import {
   useGLTF,
@@ -63,16 +66,20 @@ export default function App() {
 
       
       <color attach="background" args={['#f0f0f0']} />
-      {/* <Float> */}
+      <Float speed={1.5} rotationIntensity={1} floatIntensity={.5}>
         <Ganatsio perfSucks={perfSucks} rotation={[0, -2, 0]} scale={3.006} />
-      {/* </Float> */}
+      </Float>
       
       <Env perfSucks={perfSucks} />
 
       <EffectComposer>
-        <DepthOfField focusDistance={0} focalLength={.12} bokehScale={10} height={480} />
+        <DepthOfField focusDistance={.01} focalLength={.22} bokehScale={100} height={860} />
         <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={600} />
-        <Noise opacity={0.15} />
+        <Noise opacity={0.145} />
+        {/* <SMAA /> */}
+        <BrightnessContrast 
+          brightness={.0001} contrast={0.17} 
+        />
       </EffectComposer>
 
     </Canvas>
@@ -108,7 +115,7 @@ function Env({ perfSucks }) {
   })
   // Runtime environments can be too slow on some systems, better safe than sorry with PerfMon
   return (
-    <Environment frames={perfSucks ? 1 : Infinity} preset="city" resolution={256} background blur={0.8}>
+    <Environment frames={perfSucks ? 1 : Infinity} preset="city" resolution={256} background blur={0.6}>
       <Lightformer intensity={10} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
       <Lightformer intensity={1} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
       <group rotation={[Math.PI / 2, 1, 0]}>
@@ -120,7 +127,7 @@ function Env({ perfSucks }) {
         <Lightformer intensity={0.5} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
       </group>
       <group ref={ref}>
-        <Lightformer intensity={1} form="ring" color="white" rotation-y={Math.PI / 2} position={[-5, 2, -1]} scale={[10, 10, 1]} />
+        <Lightformer intensity={1} form="ring" color="#FFF" rotation-y={Math.PI / 2} position={[-5, 2, -1]} scale={[10, 10, 1]} />
       </group>
     </Environment>
   )
